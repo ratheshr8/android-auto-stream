@@ -4,6 +4,12 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+val releaseStoreFile = System.getenv("SIDING_STORE_FILE")
+val releaseStorePassword = System.getenv("SIDING_STORE_PASSWORD")
+val releaseKeyAlias = System.getenv("SIDING_KEY_ALIAS")
+val releaseKeyPassword = System.getenv("SIDING_KEY_PASSWORD")
+val releaseSigningReady = !releaseStoreFile.isNullOrBlank()
+
 android {
     namespace = "app.siding.browser"
     compileSdk = 35
@@ -17,6 +23,17 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        if (releaseSigningReady) {
+            create("release") {
+                storeFile = file(releaseStoreFile)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -24,6 +41,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            if (releaseSigningReady) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 

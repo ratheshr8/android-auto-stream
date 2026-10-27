@@ -11,4 +11,8 @@ captures/
 android-sdk/
 *.apk
 *.aab
+*.jks
+*.keystore
+*.p12
+release-signing.properties
 agent-tools/
